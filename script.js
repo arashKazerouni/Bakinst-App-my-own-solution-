@@ -63,28 +63,15 @@ const inputCloseUsername = document.querySelector('.form__input--user');
 const inputClosePin = document.querySelector('.form__input--pin');
 
 /////////////////////////////////////////////////
-/////////////////////////////////////////////////
-// LECTURES
-
-const currencies = new Map([
-  ['USD', 'United States dollar'],
-  ['EUR', 'Euro'],
-  ['GBP', 'Pound sterling'],
-]);
-
-const movements = [200, 450, -400, 3000, -650, -130, 70, 1300];
-
-/////////////////////////////////////////////////
 //====================
 // User Login
 //====================
-
+// Function to Creating short names
 const toDilutedName = name => {
   let dilutedName = '';
   const splittedName = name.split(' ');
   for (let i = 0; i < splittedName.length; i++)
     dilutedName += splittedName[i][0].toLowerCase();
-
   return dilutedName;
 };
 
@@ -94,8 +81,11 @@ btnLogin.onclick = e => {
   const pin = Number(inputLoginPin.value);
 
   accounts.forEach(acc => {
+    // Check Username and Password While User Login
     if (userName === toDilutedName(acc.owner) && pin === acc.pin) {
       console.log('Login Succesful');
+      labelWelcome.textContent = `Welcome, Dear ${acc.owner.split(' ')[0]}`;
+      labelBalance.textContent = ``;
     }
   });
 };
