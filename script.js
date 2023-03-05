@@ -77,15 +77,36 @@ const toDilutedName = name => {
 
 btnLogin.onclick = e => {
   e.preventDefault();
+  // Variables
   const userName = inputLoginUsername.value;
   const pin = Number(inputLoginPin.value);
-
+  // Loop on
   accounts.forEach(acc => {
+    // Variables
+    let currentBalance = acc.movements.reduce((a, b) => a + b, 0);
+    const html = acc => {};
     // Check Username and Password While User Login
     if (userName === toDilutedName(acc.owner) && pin === acc.pin) {
-      console.log('Login Succesful');
+      // Replacing Data in main App container
+      // Welcome And Current Balance
       labelWelcome.textContent = `Welcome, Dear ${acc.owner.split(' ')[0]}`;
-      labelBalance.textContent = ``;
+      labelBalance.textContent = `${currentBalance}€`;
+      // Movements History
+      acc.movements.forEach(mov => {
+        // console.log(mov);
+        // Rows will appear here
+        containerMovements.insertAdjacentHTML(
+          'afterbegin',
+          `<div class="movements__row">
+          <div class="movements__type movements__type--deposit">2 deposit</div>
+          <div class="movements__value">${mov}€</div>
+        </div>
+    `
+        );
+      });
     }
+    inputLoginUsername.value = '';
+    inputLoginPin.value = '';
+    inputLoginPin.blur();
   });
 };
