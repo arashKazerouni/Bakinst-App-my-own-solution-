@@ -92,17 +92,16 @@ btnLogin.onclick = e => {
       labelWelcome.textContent = `Welcome, Dear ${acc.owner.split(' ')[0]}`;
       labelBalance.textContent = `${currentBalance}€`;
       // Movements History
+      let counter = 1;
       acc.movements.forEach(mov => {
-        // console.log(mov);
-        // Rows will appear here
-        containerMovements.insertAdjacentHTML(
-          'afterbegin',
-          `<div class="movements__row">
-          <div class="movements__type movements__type--deposit">2 deposit</div>
-          <div class="movements__value">${mov}€</div>
-        </div>
-    `
-        );
+        const checkDeposit = mov > 0 ? 'deposit' : 'withdrawal';
+        const html = `
+          <div class="movements__row">
+            <div class="movements__type movements__type--${checkDeposit}">${counter++} ${checkDeposit}</div>
+            <div class="movements__value">${mov}€</div>
+          </div>
+          `;
+        containerMovements.insertAdjacentHTML('afterbegin', html);
       });
     }
     inputLoginUsername.value = '';
