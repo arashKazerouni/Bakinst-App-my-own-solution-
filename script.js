@@ -77,17 +77,16 @@ const toDilutedName = name => {
 
 btnLogin.onclick = e => {
   e.preventDefault();
+  containerMovements.innerHTML = '';
   // Variables
   const userName = inputLoginUsername.value;
   const pin = Number(inputLoginPin.value);
-  // Loop on
+  // Loop on Acoounts
   accounts.forEach(acc => {
     // Variables
     let currentBalance = acc.movements.reduce((a, b) => a + b, 0);
-    const html = acc => {};
     // Check Username and Password While User Login
     if (userName === toDilutedName(acc.owner) && pin === acc.pin) {
-      // Replacing Data in main App container
       // Welcome And Current Balance
       labelWelcome.textContent = `Welcome, Dear ${acc.owner.split(' ')[0]}`;
       labelBalance.textContent = `${currentBalance}€`;
