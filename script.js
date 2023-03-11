@@ -85,6 +85,7 @@ const resetInputs = array => {
 // Function to Show the movements
 
 const showMovements = acc => {
+  containerMovements.innerHTML = '';
   currentBalance = getCurrentBalance(acc);
   labelBalance.textContent = `${currentBalance}€`;
   let counter = 1;
@@ -104,7 +105,7 @@ const showMovements = acc => {
 // ==================================================
 btnLogin.onclick = e => {
   e.preventDefault();
-  containerMovements.innerHTML = '';
+
   const userName = inputLoginUsername.value;
   const pin = Number(inputLoginPin.value);
   // Loop on Acoounts
@@ -127,9 +128,9 @@ btnLogin.onclick = e => {
 // ==================================================
 btnTransfer.onclick = e => {
   e.preventDefault();
+  const user = inputTransferTo.value;
+  let amount = Number(inputTransferAmount.value);
   accounts.forEach(acc => {
-    const user = inputTransferTo.value;
-    let amount = Number(inputTransferAmount.value);
     currentBalance = getCurrentBalance(currentAccount);
     if (
       toDilutingName(acc.owner) === user &&
@@ -144,4 +145,14 @@ btnTransfer.onclick = e => {
   });
   arrayOfInputs = [inputTransferTo, inputTransferAmount];
   resetInputs(arrayOfInputs);
+};
+// ==================================================
+// Requesting Loan
+// ==================================================
+btnLoan.onclick = e => {
+  e.preventDefault();
+  const loan = Number(inputLoanAmount.value);
+  if (loan > 0) currentAccount.movements.push(loan);
+  showMovements(currentAccount);
+  inputLoanAmount.value = '';
 };
