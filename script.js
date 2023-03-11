@@ -63,31 +63,37 @@ const inputCloseUsername = document.querySelector('.form__input--user');
 const inputClosePin = document.querySelector('.form__input--pin');
 
 /////////////////////////////////////////////////
-//====================
-// User Login
-//====================
+let onlineUser, arrayOfInputs;
 // Function to Creating short names
-const toDilutedName = name => {
+const toDilutingName = name => {
   let dilutedName = '';
   const splittedName = name.split(' ');
   for (let i = 0; i < splittedName.length; i++)
     dilutedName += splittedName[i][0].toLowerCase();
   return dilutedName;
 };
-
+// Function to Reset inputs
+const resetInputs = array => {
+  array.forEach(input => {
+    input.value = '';
+    input.blur();
+  });
+};
+// ==================================================
+// User Login (when click on login button)
+// ==================================================
 btnLogin.onclick = e => {
   e.preventDefault();
   containerMovements.innerHTML = '';
-  // Variables
   const userName = inputLoginUsername.value;
   const pin = Number(inputLoginPin.value);
   // Loop on Acoounts
   accounts.forEach(acc => {
-    // Variables
     let currentBalance = acc.movements.reduce((a, b) => a + b, 0);
     // Check Username and Password While User Login
-    if (userName === toDilutedName(acc.owner) && pin === acc.pin) {
+    if (userName === toDilutingName(acc.owner) && pin === acc.pin) {
       // Welcome And Current Balance
+      onlineUser = userName;
       labelWelcome.textContent = `Welcome, Dear ${acc.owner.split(' ')[0]}`;
       labelBalance.textContent = `${currentBalance}€`;
       // Movements History
@@ -95,16 +101,34 @@ btnLogin.onclick = e => {
       acc.movements.forEach(mov => {
         const checkDeposit = mov > 0 ? 'deposit' : 'withdrawal';
         const html = `
-          <div class="movements__row">
-            <div class="movements__type movements__type--${checkDeposit}">${counter++} ${checkDeposit}</div>
-            <div class="movements__value">${mov}€</div>
-          </div>
-          `;
+        <div class="movements__row">
+        <div class="movements__type movements__type--${checkDeposit}">${counter++} ${checkDeposit}</div>
+        <div class="movements__value">${mov}€</div>
+        </div>
+        `;
         containerMovements.insertAdjacentHTML('afterbegin', html);
       });
     }
-    inputLoginUsername.value = '';
-    inputLoginPin.value = '';
-    inputLoginPin.blur();
+    arrayOfInputs = [inputLoginUsername, inputLoginPin];
+    resetInputs(arrayOfInputs);
   });
+};
+// ==================================================
+// Transfering Money
+// ==================================================
+btnTransfer.onclick = e => {
+  e.preventDefault();
+  accounts.forEach(acc => {
+    const user = inputTransferTo.value;
+    const amount = Number(inputTransferAmount.value);
+    if (
+      toDilutingName(acc.owner) === user &&
+      amount > 0 &&
+      user !== onlineUser
+    ) {
+      acc.movements.push(amount);
+    }
+  });
+  arrayOfInputs = [inputTransferTo, inputTransferAmount];
+  resetInputs(arrayOfInputs);
 };
