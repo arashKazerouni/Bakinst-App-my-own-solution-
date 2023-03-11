@@ -63,7 +63,7 @@ const inputCloseUsername = document.querySelector('.form__input--user');
 const inputClosePin = document.querySelector('.form__input--pin');
 
 /////////////////////////////////////////////////
-let onlineUser, arrayOfInputs;
+let onlineUserName, arrayOfInputs, currentAccount, currentBalance;
 // Function to Creating short names
 const toDilutingName = name => {
   let dilutedName = '';
@@ -72,11 +72,31 @@ const toDilutingName = name => {
     dilutedName += splittedName[i][0].toLowerCase();
   return dilutedName;
 };
+// Function to get current balance
+const getCurrentBalance = acc => acc.movements.reduce((a, b) => a + b, 0);
+
 // Function to Reset inputs
 const resetInputs = array => {
   array.forEach(input => {
     input.value = '';
     input.blur();
+  });
+};
+// Function to Show the movements
+
+const showMovements = acc => {
+  currentBalance = getCurrentBalance(acc);
+  labelBalance.textContent = `${currentBalance}€`;
+  let counter = 1;
+  acc.movements.forEach(mov => {
+    const checkDeposit = mov > 0 ? 'deposit' : 'withdrawal';
+    const html = `
+    <div class="movements__row">
+    <div class="movements__type movements__type--${checkDeposit}">${counter++} ${checkDeposit}</div>
+    <div class="movements__value">${mov}€</div>
+    </div>
+    `;
+    containerMovements.insertAdjacentHTML('afterbegin', html);
   });
 };
 // ==================================================
@@ -89,25 +109,14 @@ btnLogin.onclick = e => {
   const pin = Number(inputLoginPin.value);
   // Loop on Acoounts
   accounts.forEach(acc => {
-    let currentBalance = acc.movements.reduce((a, b) => a + b, 0);
     // Check Username and Password While User Login
     if (userName === toDilutingName(acc.owner) && pin === acc.pin) {
       // Welcome And Current Balance
-      onlineUser = userName;
+      onlineUserName = userName;
+      currentAccount = acc;
       labelWelcome.textContent = `Welcome, Dear ${acc.owner.split(' ')[0]}`;
-      labelBalance.textContent = `${currentBalance}€`;
       // Movements History
-      let counter = 1;
-      acc.movements.forEach(mov => {
-        const checkDeposit = mov > 0 ? 'deposit' : 'withdrawal';
-        const html = `
-        <div class="movements__row">
-        <div class="movements__type movements__type--${checkDeposit}">${counter++} ${checkDeposit}</div>
-        <div class="movements__value">${mov}€</div>
-        </div>
-        `;
-        containerMovements.insertAdjacentHTML('afterbegin', html);
-      });
+      showMovements(acc);
     }
     arrayOfInputs = [inputLoginUsername, inputLoginPin];
     resetInputs(arrayOfInputs);
@@ -120,13 +129,17 @@ btnTransfer.onclick = e => {
   e.preventDefault();
   accounts.forEach(acc => {
     const user = inputTransferTo.value;
-    const amount = Number(inputTransferAmount.value);
+    let amount = Number(inputTransferAmount.value);
+    currentBalance = getCurrentBalance(currentAccount);
     if (
       toDilutingName(acc.owner) === user &&
       amount > 0 &&
-      user !== onlineUser
+      amount <= currentBalance &&
+      user !== onlineUserName
     ) {
       acc.movements.push(amount);
+      currentAccount.movements.push(-amount);
+      showMovements(currentAccount);
     }
   });
   arrayOfInputs = [inputTransferTo, inputTransferAmount];
