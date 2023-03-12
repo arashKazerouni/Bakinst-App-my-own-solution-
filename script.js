@@ -63,8 +63,10 @@ const inputCloseUsername = document.querySelector('.form__input--user');
 const inputClosePin = document.querySelector('.form__input--pin');
 
 /////////////////////////////////////////////////
-let onlineUserName, arrayOfInputs, currentAccount, currentBalance;
+let onlineUserName, arrayOfInputs, currentAccount, currentBalance, counter;
+let isSort = false;
 
+let sortedMovements = [];
 // Function to Creating short names
 const toDilutingName = name => {
   let dilutedName = '';
@@ -84,14 +86,17 @@ const resetInputs = array => {
   });
 };
 // Function to Show the movements
-
 const showMovements = acc => {
+  let sumIn = 0;
+  let sumOut = 0;
+  let sumInterest = 0;
   containerMovements.innerHTML = '';
   containerApp.style.opacity = 100;
   currentBalance = getCurrentBalance(acc);
   labelBalance.textContent = `${currentBalance}€`;
-  let counter = 1;
-  acc.movements.forEach(mov => {
+  counter = 1;
+  const movements = isSort ? sortedMovements : acc.movements;
+  movements.forEach(mov => {
     const checkDeposit = mov > 0 ? 'deposit' : 'withdrawal';
     const html = `
     <div class="movements__row">
@@ -100,14 +105,23 @@ const showMovements = acc => {
     </div>
     `;
     containerMovements.insertAdjacentHTML('afterbegin', html);
+    // =======================
+    // Calculate Sums
+    // =======================
+    mov > 0 ? (sumIn += mov) : (sumOut -= mov);
+    labelSumIn.textContent = `${sumIn}€`;
+    labelSumOut.textContent = `${sumOut}€`;
+    if (mov > 0) sumInterest += (mov * acc.interestRate) / 100;
+    labelSumInterest.textContent = `${sumInterest}€`;
   });
 };
+// Functions to Calculate Sums
+const calculateSums = acc => {};
 // ==================================================
 // User Login (when click on login button)
 // ==================================================
 btnLogin.onclick = e => {
   e.preventDefault();
-
   const userName = inputLoginUsername.value;
   const pin = Number(inputLoginPin.value);
   // Loop on Acoounts
@@ -172,4 +186,14 @@ btnClose.onclick = e => {
   }
   arrayOfInputs = [inputCloseUsername, inputClosePin];
   resetInputs(arrayOfInputs);
+};
+// ==================================================
+// Sorting Movements
+// ==================================================
+btnSort.onclick = e => {
+  e.preventDefault();
+  isSort = !isSort;
+  if (isSort)
+    sortedMovements = [...currentAccount.movements].sort((a, b) => a - b);
+  showMovements(currentAccount);
 };
