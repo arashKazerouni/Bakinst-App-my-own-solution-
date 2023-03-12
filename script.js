@@ -64,6 +64,7 @@ const inputClosePin = document.querySelector('.form__input--pin');
 
 /////////////////////////////////////////////////
 let onlineUserName, arrayOfInputs, currentAccount, currentBalance;
+
 // Function to Creating short names
 const toDilutingName = name => {
   let dilutedName = '';
@@ -86,6 +87,7 @@ const resetInputs = array => {
 
 const showMovements = acc => {
   containerMovements.innerHTML = '';
+  containerApp.style.opacity = 100;
   currentBalance = getCurrentBalance(acc);
   labelBalance.textContent = `${currentBalance}€`;
   let counter = 1;
@@ -155,4 +157,19 @@ btnLoan.onclick = e => {
   if (loan > 0) currentAccount.movements.push(loan);
   showMovements(currentAccount);
   inputLoanAmount.value = '';
+};
+// ==================================================
+// Closing Account
+// ==================================================
+btnClose.onclick = e => {
+  e.preventDefault();
+  const userName = inputCloseUsername.value;
+  const pin = Number(inputClosePin.value);
+  if (userName === onlineUserName && pin === currentAccount.pin) {
+    console.log('ok');
+    labelWelcome.textContent = 'Log in to get started';
+    containerApp.style.opacity = 0;
+  }
+  arrayOfInputs = [inputCloseUsername, inputClosePin];
+  resetInputs(arrayOfInputs);
 };
